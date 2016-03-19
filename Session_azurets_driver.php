@@ -6,6 +6,7 @@ use WindowsAzure\Common\ServiceException;
 use WindowsAzure\Table\Models\Entity;
 use WindowsAzure\Table\Models\EdmType;
 use WindowsAzure\Table\Models\BatchOperations;
+use WindowsAzure\Table\Models\QueryEntitiesOptions;
 
 class CI_Session_azurets_driver extends CI_Session_driver implements SessionHandlerInterface
 {
@@ -45,10 +46,12 @@ class CI_Session_azurets_driver extends CI_Session_driver implements SessionHand
     {
         try
         {
-            $result = $this->tableRestProxy->getEntity($this->tableName, $this->partitionKey, $session_id);
+            $options = new QueryEntitiesOptions();
+            $options->addSelectField($this->dataProperty);
+            $result = $this->tableRestProxy->getEntity($this->tableName, $this->partitionKey, $session_id, $options);
             $entity = $result->getEntity();
             $data = $entity->getPropertyValue($this->dataProperty);
-            return unserialize(base64_decode($data));
+            return $data == null ? '' : unserialize(base64_decode($data));
         } catch(ServiceException $e)
         {
             return '';
@@ -92,9 +95,12 @@ class CI_Session_azurets_driver extends CI_Session_driver implements SessionHand
     {
         $maxAge = str_replace(" ", "T", date("Y-m-d H:i:s", time() - $maxlifetime));
         $filter = "PartitionKey eq '$this->partitionKey' and Timestamp lt datetime'$maxAge'";
+        $options = new QueryEntitiesOptions();
+        $options->setFilter(Filter::applyQueryString($filter));
+        $options->addSelectField('RowKey');
         try
         {
-            $result = $this->tableRestProxy->queryEntities($this->tableName, $filter);
+            $result = $this->tableRestProxy->queryEntities($this->tableName, $options);
             $entities = $result->getEntities();
             $operations = new BatchOperations();
             $counter = 0;
@@ -133,4 +139,5 @@ class CI_Session_azurets_driver extends CI_Session_driver implements SessionHand
         }
     }
 }
+
 ?>
