@@ -1,12 +1,12 @@
 <?php
 
 use WindowsAzure\Common\ServicesBuilder;
-use WindowsAzure\Table\TableRestProxy;
-use WindowsAzure\Common\ServiceException;
-use WindowsAzure\Table\Models\Entity;
-use WindowsAzure\Table\Models\EdmType;
-use WindowsAzure\Table\Models\BatchOperations;
-use WindowsAzure\Table\Models\QueryEntitiesOptions;
+use MicrosoftAzure\Storage\Table\TableRestProxy;
+use MicrosoftAzure\Storage\Common\ServiceException;
+use MicrosoftAzure\Storage\Table\Models\Entity;
+use MicrosoftAzure\Storage\Table\Models\EdmType;
+use MicrosoftAzure\Storage\Table\Models\BatchOperations;
+use MicrosoftAzure\Storage\Table\Models\QueryEntitiesOptions;
 
 class CI_Session_azurets_driver extends CI_Session_driver implements SessionHandlerInterface
 {
